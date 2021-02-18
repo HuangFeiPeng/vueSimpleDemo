@@ -1,0 +1,46 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+:root{
+    --font_color:rgb(078, 110, 242);
+}
+html{
+    letter-spacing: 5px;
+}
+body{
+    width: 1100px;
+    height: 100vh;
+    margin: 0 auto;
+}
+
+#title{
+    margin-top: 50px;
+    text-align: center;
+    color: var(--font_color);
+}
+
+
+.login_box{
+    height: 500px;
+    background: rgba(78, 111, 242, 0.281);
+    padding: 10px;
+}
+
+.login_box_left{
+    width: 500px;
+    height: 100%;
+}
+.input_list{
+    height: 50px;
+    line-height: 50px;
+}
+#hxId,#hxPwd{
+    border: none;
+    outline: none;
+    width: 200px;
+    height: 30px;
+    font-size: 16px;
+    padding: 0 5px;
+    caret-color: #3471ED;
+}
