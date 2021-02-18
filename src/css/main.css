@@ -5,9 +5,7 @@
 :root{
     --font_color:rgb(078, 110, 242);
 }
-html{
-    letter-spacing: 5px;
-}
+
 body{
     width: 1100px;
     height: 100vh;
@@ -17,12 +15,13 @@ body{
 #title{
     margin-top: 50px;
     text-align: center;
+    letter-spacing: 5px;
     color: var(--font_color);
 }
 
 
 .login_box{
-    height: 500px;
+    height: 550px;
     background: rgba(78, 111, 242, 0.281);
     padding: 10px;
 }
@@ -30,12 +29,14 @@ body{
 .login_box_left{
     width: 500px;
     height: 100%;
+    float: left;
+    margin-left: 20px;
 }
 .input_list{
     height: 50px;
     line-height: 50px;
 }
-#hxId,#hxPwd{
+#hxId,#hxPwd,#toId,#msgId{
     border: none;
     outline: none;
     width: 200px;
@@ -43,4 +44,30 @@ body{
     font-size: 16px;
     padding: 0 5px;
     caret-color: #3471ED;
+}
+.sendMsg_box{
+    margin-top: 10px;
+}
+.sendMsg_box form{
+    display: flex;
+    flex-direction: column;
+}
+.sendMsg_box>form>label{
+    cursor: pointer;
+    margin: 5px 0;
+}
+.login_box_right{
+    float: left;
+    margin-left: 50px;
+    width: 500px;
+    height: 100%;
+    border-radius: 10px;
+    background-color: rgb(121, 159, 240);
+}
+
+.msgList_box_content{
+    height: 100%;
+}
+.msgList_box_content>h3{
+    text-align: center;
 }

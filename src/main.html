@@ -20,9 +20,10 @@
       <main>
         <!-- 登陆注册部分 -->
         <div class="login_box">
+          <!-- 左侧展示框 -->
           <div class="login_box_left">
             <p class="user_state">{{user_state}}</p>
-            <p class="login_title" v-text="isLogin ?'正在登陆':'正在注册'"></p>
+            <p class="login_title" v-text="isLogin ?'开始登陆':'开始注册'"></p>
             <form autocomplete="off">
               <div class="input_list">
                 <label for="hxId">
@@ -45,6 +46,7 @@
                     v-model="hxPwd"
                     placeholder="输入环信密码..."
                     onkeyup="this.value=this.value.replace(/[, ]/g,'')"
+                    @keyup.enter="login"
                   />
                 </label>
               </div>
@@ -53,7 +55,8 @@
                   登陆
                 </button>
                 <button type="button" v-else @click="registerUser">注册</button>
-                <button type="button">登出</button>
+                <button type="button" @click="exit">退出</button>
+
                 <button
                   type="button"
                   @click="isLogin = !isLogin"
@@ -61,8 +64,65 @@
                 ></button>
               </div>
             </form>
+            <div class="sendMsg_box">
+              <h3>聊天类型设定</h3>
+              <form autocomplete="off">
+                <label for="singleChat">
+                  单聊模式：
+                  <input type="radio" id="singleChat" name="chatType" @click="setChatType(0)" checked />
+                </label>
+                <label for="groupChat">
+                  群聊模式：
+                  <input type="radio" id="groupChat" name="chatType" @click="setChatType(1)"/>
+                </label>
+                <label for="roomChat">
+                  聊天室模式：
+                  <input type="radio" id="roomChat" name="chatType" @click="setChatType(2)"/>
+                </label>
+                <label for="toId">
+                  发送目标：
+                  <input
+                    type="text"
+                    id="toId"
+                    v-model="sendTo"
+                    placeholder="userId、groupId、roomId"
+                  />
+                </label>
+                <label for="updateFile">
+                  附件上传：
+                  <input type="file" id="updateFile" />
+                </label>
+                <label for="msgId">
+                  messageId：
+                  <input type="text" id="msgId" placeholder="消息mid" />
+                </label>
+                <textarea
+                  name=""
+                  id="textMsgVal"
+                  cols="50"
+                  rows="5"
+                  placeholder="文本消息输入框"
+                  v-model="textValue"
+                ></textarea>
+              </form>
+              <button @click="sendTextMsg">文本消息</button>
+              <button>自定义消息</button>
+              <button>CMD消息</button>
+              <button>位置消息</button>
+              <button>撤回消息</button>
+              <button>消息漫游</button>
+              <button>会话列表</button>
+            </div>
           </div>
-          <div class="login_box_right"></div>
+          <!-- 右侧消息展示框 -->
+          <div class="login_box_right">
+            <div class="msgList_box_content">
+              <h3>消息展示框</h3>
+              <ul>
+                  <!-- <li v-for="(item,index) in items"></li> -->
+              </ul>
+            </div>
+          </div>
         </div>
       </main>
     </div>
@@ -77,12 +137,17 @@
         user_state: '离线中...',
         hxId: '',
         hxPwd: '',
+        sendTo:'',
+        textValue:'', //文本域的value
+        nowChatType:'singleChat'
+        
       }
     },
     methods: {
       //登陆
       login() {
         let options = {
+          apiUrl: WebIM.config.restServer,
           user: this.hxId,
           pwd: this.hxPwd,
           appKey: WebIM.config.appkey,
@@ -96,7 +161,9 @@
           password: this.hxPwd,
           nickname: 'nickname', //改昵称并非存储在环信服务器的昵称主要用作APP端推送使用，web端暂未得到应用。
           appKey: WebIM.config.appkey,
-          success: function () {},
+          success: function () {
+            alert('注册OK')
+          },
           error: function (err) {
             let errorData = JSON.parse(err.data)
             if (errorData.error === 'duplicate_unique_property_exists') {
@@ -115,6 +182,53 @@
           },
         }
         conn.registerUser(options)
+      },
+      //登出
+      exit() {
+        conn.close()
+        ;(this.hxId = ''), (this.hxPwd = '')
+        // console.log(111);
+      },
+      //修改聊天模式
+      setChatType(val){
+          console.log(val);
+          let chatTpe = {
+            0:'singleChat',
+            1:'groupChat',
+            2:'chatRoom'
+          }
+          this.nowChatType = chatTpe[val]
+      },
+      //文本消息
+      sendTextMsg() {
+        let id = conn.getUniqueId() // 生成本地消息id
+        let msg = new WebIM.message('txt', id) // 创建文本消息
+        msg.set({
+          msg: this.textValue, // 消息内容
+          to: String(this.toId), // 接收消息对象（用户id）
+          chatType: this.nowChatType, // 设置为单聊
+          ext: {
+            key: '1',
+            key2: {
+              key3: '2',
+            },
+          }, //扩展消息
+          success: function (id, serverMsgId) {
+            console.log('>>>>>>>>发送成功',id, serverMsgId)
+          },
+          fail: function (e) {
+            // 失败原因:
+            // e.type === '603' 被禁言
+            // e.type === '605' 群组不存在
+            // e.type === '602' 不在群组或聊天室中
+            // e.type === '504' 撤回消息时超出撤回时间
+            // e.type === '505' 未开通消息撤回
+            // e.type === '506' 没有在群组或聊天室白名单
+            // e.type === '503' 未知错误
+            console.log('Send private text error',e,msg.body)
+          },
+        })
+        conn.send(msg.body)
       },
     },
   })

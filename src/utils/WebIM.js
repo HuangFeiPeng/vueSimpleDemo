@@ -21,10 +21,13 @@ conn = WebIM.conn = new WebIM.connection({
 conn.listen({
   onOpened: function ( message ) {
     console.log('>>>>>>>登陆成功');
+    vm.user_state = '在线...' //登陆成功修改在线状态
+    // vm.user_state
     alert('登陆环信成功！！！')
   },         //连接成功回调 
   onClosed: function ( message ) {
-    console.log('>>>>>退出环信');
+    alert('>>>>>退出环信');
+    vm.user_state = '离线中...' //登陆成功修改在线状态
   },         //连接关闭回调
   onTextMessage: function ( message ) {},    //收到文本消息
   onEmojiMessage: function ( message ) {},   //收到表情消息
@@ -55,7 +58,9 @@ conn.listen({
   onInviteMessage: function ( message ) {},  //处理群组邀请
   onOnline: function () {},                  //本机网络连接成功
   onOffline: function () {},                 //本机网络掉线
-  onError: function ( message ) {},          //失败回调
+  onError: function ( err ) {
+    console.log('>>>>onError',err);
+  },          //失败回调
   onBlacklistUpdate: function (list) {       //黑名单变动
       // 查询黑名单，将好友拉黑，将好友从黑名单移除都会回调这个函数，list则是黑名单现有的所有好友信息
       console.log(list);

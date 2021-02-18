@@ -41,7 +41,7 @@ function getUrl() {
   
     https: true, // 是否使用https
   
-    isHttpDNS: true, // 3.0 SDK支持，防止DNS劫持从服务端获取XMPPUrl、restUrl
+    isHttpDNS: false, // 3.0 SDK支持，防止DNS劫持从服务端获取XMPPUrl、restUrl
   
     isMultiLoginSessions: true, // 是否开启多页面同步收消息，注意，需要先联系商务开通此功能
   
