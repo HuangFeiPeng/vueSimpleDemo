@@ -33,16 +33,20 @@ function getUrl() {
   
   let config = {
     socketServer: getUrl().xmppUrl, // socket Server地址
+    // socketServer: '//im-api-vip6-v2.easemob.com/ws',    // xmpp Server地址 、, // socket Server地址
   
+    // restServer: '//a1-vip6.easemob.com', // rest Server地址
     restServer: getUrl().apiUrl, // rest Server地址
   
+    // appkey: "1110201022157933#ceshi", // App key
     // appkey: "easemob-demo#chatdemoui", // App key
-    appkey: "1110201022157933#ceshi", // App key
+    appkey: "easemob-demo#easeim", // App key
+    // appkey: "1160210311040265#ws", // App key
+    
   
     https: true, // 是否使用https
   
-    isHttpDNS: false, // 3.0 SDK支持，防止DNS劫持从服务端获取XMPPUrl、restUrl
-  
+    isHttpDNS: true,
     isMultiLoginSessions: true, // 是否开启多页面同步收消息，注意，需要先联系商务开通此功能
   
     isAutoLogin: true,

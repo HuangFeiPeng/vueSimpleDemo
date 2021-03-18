@@ -1,147 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./css/main.css" />
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="../node_modules/easemob-websdk/websdk3.4.2.js"></script>
-    <script src="./utils/WebIMConfig.js"></script>
-    <script src="./utils/WebIM.js"></script>
 
-    <title>环信接口测试</title>
-  </head>
-  <body>
-    <div id="app">
-      <header>
-        <h1 id="title">环信SDK接口测试Demo</h1>
-      </header>
-      <main>
-        <!-- 登陆注册部分 -->
-        <div class="login_box">
-          <!-- 左侧展示框 -->
-          <div class="login_box_left">
-            <p class="user_state">{{user_state}}</p>
-            <p class="login_title" v-text="isLogin ?'开始登陆':'开始注册'"></p>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="../node_modules/easemob-websdk/websdk3.5.0.js"></script>
+  <script src="./utils/WebIMConfig.js"></script>
+  <script src="./utils/WebIM.js"></script>
+
+  <title>环信接口测试</title>
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <h1 id="title">环信SDK接口测试Demo</h1>
+    </header>
+    <main>
+      <!-- 登陆注册部分 -->
+      <div class="login_box">
+        <!-- 左侧展示框 -->
+        <div class="login_box_left">
+          <p class="user_state" :style="user_state.font_color">{{user_state.text}}</p>
+          <p class="login_title" v-text="isLogin ?'开始登陆':'开始注册'"></p>
+          <form autocomplete="off">
+            <div class="input_list">
+              <label for="hxId">
+                环信ID：
+                <input id="hxId" type="text" v-model="hxId" placeholder="输入环信ID..."
+                  onkeyup="this.value=this.value.replace(/[, ]/g,'')" />
+              </label>
+            </div>
+            <div class="input_list">
+              <label for="hxPwd">
+                环信密码：
+                <input id="hxPwd" type="text" v-model="hxPwd" placeholder="输入环信密码..."
+                  onkeyup="this.value=this.value.replace(/[, ]/g,'')" @keyup.enter="login" />
+              </label>
+            </div>
+            <div class="btn_box">
+              <button type="button" v-if="isLogin" @click="login">
+                登陆
+              </button>
+
+              <button type="button" v-else @click="registerUser">注册</button>
+              <button type="button" @click="exit">退出</button>
+
+              <button type="button" @click="isLogin = !isLogin" v-text="isLogin ?'去注册':'去登陆'"></button>
+
+            </div>
+          </form>
+          <button @click="loginToken">token登陆</button>
+          <div class="sendMsg_box">
+            <h5>聊天类型设定</h5>
             <form autocomplete="off">
-              <div class="input_list">
-                <label for="hxId">
-                  环信ID：
-                  <input
-                    id="hxId"
-                    type="text"
-                    v-model="hxId"
-                    placeholder="输入环信ID..."
-                    onkeyup="this.value=this.value.replace(/[, ]/g,'')"
-                  />
-                </label>
+              <label for="singleChat">
+                单聊模式：
+                <input type="radio" id="singleChat" name="chatType" @click="setChatType(0)" checked />
+              </label>
+              <label for="groupChat">
+                群聊模式：
+                <input type="radio" id="groupChat" name="chatType" @click="setChatType(1)" />
+              </label>
+              <label for="roomChat">
+                聊天室模式：
+                <input type="radio" id="roomChat" name="chatType" @click="setChatType(2)" />
+              </label>
+              <label for="toId">
+                目标ID：
+                <input type="text" id="toId" v-model="sendTo" placeholder="userId、groupId、roomId" />
+              </label>
+              <!-- 消息漫游部分的设定 -->
+              <div>
+                <h5>消息漫游部分的设定</h5>
+                <input type="range" max="50" min="5" ref="rangeNum" v-model="msgNum">{{ '漫游拉取条数：'+msgNum }}
+                <h6 style="color: red;">*默认拉取单聊勾选为群组（发送会话回执类型也在此选择）</h6>
+                <input type="checkbox" name="isSingle" ref="isCheck">
               </div>
-              <div class="input_list">
-                <label for="hxPwd">
-                  环信密码：
-                  <input
-                    id="hxPwd"
-                    type="text"
-                    v-model="hxPwd"
-                    placeholder="输入环信密码..."
-                    onkeyup="this.value=this.value.replace(/[, ]/g,'')"
-                    @keyup.enter="login"
-                  />
+              <h5>附件设定</h5>
+              <label for="updateFile">
+                附件上传：
+                <input type="file" id="updateFile" />
+              </label>
+              <div class="fileType">
+                <h6 style="color: red;">*发附件记得选类型</h6>
+                <label for="img">
+                  <input type="radio" name="fileMsg" id="img" @click="pickFileType = 'img'">图片
                 </label>
-              </div>
-              <div class="btn_box">
-                <button type="button" v-if="isLogin" @click="login">
-                  登陆
-                </button>
-                <button type="button" v-else @click="registerUser">注册</button>
-                <button type="button" @click="exit">退出</button>
+                <label for="video">
+                  <input type="radio" name="fileMsg" id="video" @click="pickFileType = 'video'">视频
+                </label>
+                <label for="audio">
+                  <input type="radio" name="fileMsg" id="audio" @click="pickFileType = 'audio'">音频
+                </label>
+                <label for="allFile">
+                  <input type="radio" name="fileMsg" id="allFile" @click="pickFileType = 'file'">全文件
+                </label>
 
-                <button
-                  type="button"
-                  @click="isLogin = !isLogin"
-                  v-text="isLogin ?'去注册':'去登陆'"
-                ></button>
               </div>
+              <div>
+                <h5>撤回设定</h5>
+                <h6 style="color: red;">*首先选择撤回类型{{recallType}}</h6>
+                <input type="button" value="撤回chat" @click="recallType = 'chat'">
+                <input type="button" value="撤回group" @click="recallType = 'groupchat'">
+                <input type="button" value="撤回room" @click="recallType = 'chatroom'">
+              </div>
+              <label for="msgId">
+                messageId：
+                <input type="text" id="msgId" placeholder="消息mid" v-model="messageId" />
+              </label>
+              <textarea name="" id="textMsgVal" cols="50" rows="5" placeholder="文本消息输入框" v-model="textValue"
+                ref="pictureUrl"></textarea>
             </form>
-            <div class="sendMsg_box">
-              <h3>聊天类型设定</h3>
-              <form autocomplete="off">
-                <label for="singleChat">
-                  单聊模式：
-                  <input type="radio" id="singleChat" name="chatType" @click="setChatType(0)" checked />
-                </label>
-                <label for="groupChat">
-                  群聊模式：
-                  <input type="radio" id="groupChat" name="chatType" @click="setChatType(1)"/>
-                </label>
-                <label for="roomChat">
-                  聊天室模式：
-                  <input type="radio" id="roomChat" name="chatType" @click="setChatType(2)"/>
-                </label>
-                <label for="toId">
-                  发送目标：
-                  <input
-                    type="text"
-                    id="toId"
-                    v-model="sendTo"
-                    placeholder="userId、groupId、roomId"
-                  />
-                </label>
-                <label for="updateFile">
-                  附件上传：
-                  <input type="file" id="updateFile" />
-                </label>
-                <label for="msgId">
-                  messageId：
-                  <input type="text" id="msgId" placeholder="消息mid" />
-                </label>
-                <textarea
-                  name=""
-                  id="textMsgVal"
-                  cols="50"
-                  rows="5"
-                  placeholder="文本消息输入框"
-                  v-model="textValue"
-                ></textarea>
-              </form>
-              <button @click="sendTextMsg">文本消息</button>
-              <button>自定义消息</button>
-              <button>CMD消息</button>
-              <button>位置消息</button>
-              <button>撤回消息</button>
-              <button>消息漫游</button>
-              <button>会话列表</button>
-            </div>
-          </div>
-          <!-- 右侧消息展示框 -->
-          <div class="login_box_right">
-            <div class="msgList_box_content">
-              <h3>消息展示框</h3>
-              <ul>
-                  <!-- <li v-for="(item,index) in items"></li> -->
-              </ul>
-            </div>
+            <button @click="sendTextMsg">文本消息</button>
+            <button @click="sendPicture">贴图消息</button>
+            <button @click="sendCustomMsg">自定义消息</button>
+            <button @click="sendCmdMsg">CMD命令消息</button>
+            <button @click="updatFilebtn">单纯上传附件</button>
+            <button @click="sendUpdatFile">发送上传的附件</button>
+            <button @click="sendFileMsg">附件消息</button>
+            <button @click="recallMsg">撤回消息</button>
+            <button @click="historyMsg">消息漫游</button>
+            <button @click="initHistioryMsg">初始化漫游游标</button>
+            <button @click="conveList">会话列表</button>
+            <button @click="initReadNum">初始化会话unReadNum</button>
           </div>
         </div>
-      </main>
-    </div>
-  </body>
+        <!-- 右侧消息展示框 -->
+        <div class="login_box_right">
+          <div class="msgList_box_content">
+            <h3>消息展示框</h3>
+            <ul>
+              <!-- <li v-for="(item,index) in items"></li> -->
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- 好友部分 -->
+      <div class="friends_box">
+        <h3>好友部分</h3>
+        <input type="button" value="查询好友列表" @click="getFriendList" />
+        <input id="freindId" type="text" placeholder="请输入好友ID" v-model="freiendConfig.freiendId">
+        <input type="button" value="添加" @click="addContact">
+        <input type="button" value="删除" @click="removeContact">
+      </div>
+    </main>
+  </div>
+</body>
+
 </html>
 <script>
   let vm = new Vue({
     el: '#app',
     data() {
       return {
-        isLogin: true,
-        user_state: '离线中...',
-        hxId: '',
-        hxPwd: '',
-        sendTo:'',
-        textValue:'', //文本域的value
-        nowChatType:'singleChat'
-        
+        isLogin: true, //true登陆 false注册
+
+        user_state: {
+          text: '离线中...',
+          font_color: 'color:red;'
+        },
+        hxId: '', //环信ID
+        hxPwd: '', //环信密码
+        pickFileType: '', //选中的附件类型
+        msgNum: "10", //漫游条数
+        isSingle: true,
+        recallType: '', //撤回类型,
+        messageId: '', //消息mid
+        sendTo: '', //目标ID（包含群组以及聊天室ID）
+        textValue: '', //文本域的value
+        nowChatType: 'singleChat', //选中聊天类型
+        freiendConfig: { //好友部分参数
+          freiendId: ""
+        }
       }
+    },
+    created() {
+
     },
     methods: {
       //登陆
@@ -153,6 +192,15 @@
           appKey: WebIM.config.appkey,
         }
         conn.open(options)
+      },
+      //token登陆
+      loginToken() {
+        var options = {
+          user: this.hxId,
+          accessToken: 'YWMt72qnlnpzEeuXoaGTylGr0-mnEluU3UYkp9fpuMJGksnXMPTwSkkR66nbLZyivJqzAwMAAAF37TS71gBPGgAwgkPIy74MMNO9DBCOcgVT4maetbrntUbrrFgrsB8Wvw',
+          appKey: WebIM.config.appkey
+        };
+        conn.open(options);
       },
       //注册
       registerUser() {
@@ -185,19 +233,22 @@
       },
       //登出
       exit() {
-        conn.close()
-        ;(this.hxId = ''), (this.hxPwd = '')
+        conn.close();
+        (this.hxId = ''), (this.hxPwd = '')
         // console.log(111);
       },
       //修改聊天模式
-      setChatType(val){
-          console.log(val);
-          let chatTpe = {
-            0:'singleChat',
-            1:'groupChat',
-            2:'chatRoom'
-          }
-          this.nowChatType = chatTpe[val]
+      setChatType(val) {
+        console.log(val)
+        let chatTpe = {
+          0: 'singleChat',
+          1: 'groupChat',
+          2: 'chatRoom',
+        }
+        this.nowChatType = chatTpe[val]
+      },
+      isCheck(e) {
+        console.log(this.$refs.isCheck.checked);
       },
       //文本消息
       sendTextMsg() {
@@ -205,16 +256,16 @@
         let msg = new WebIM.message('txt', id) // 创建文本消息
         msg.set({
           msg: this.textValue, // 消息内容
-          to: String(this.toId), // 接收消息对象（用户id）
-          chatType: this.nowChatType, // 设置为单聊
+          to: String(this.sendTo), // 接收消息对象（用户id）
+          chatType: this.nowChatType, // 设置聊天类型
           ext: {
-            key: '1',
+            key: '头像URL',
             key2: {
-              key3: '2',
+              key3: '昵称',
             },
           }, //扩展消息
           success: function (id, serverMsgId) {
-            console.log('>>>>>>>>发送成功',id, serverMsgId)
+            console.log('>>>>>>>>发送成功', id, serverMsgId)
           },
           fail: function (e) {
             // 失败原因:
@@ -225,11 +276,255 @@
             // e.type === '505' 未开通消息撤回
             // e.type === '506' 没有在群组或聊天室白名单
             // e.type === '503' 未知错误
-            console.log('Send private text error',e,msg.body)
+            console.log('Send private text error', e, msg.body)
           },
         })
         conn.send(msg.body)
       },
+      //自定义消息
+      sendCustomMsg() {
+        var id = conn.getUniqueId() // 生成本地消息id
+        var msg = new WebIM.message('custom', id) // 创建自定义消息
+        var customEvent = 'EvenName' // 创建自定义事件
+        var customExts = {
+          ang: 'something',
+        } // 消息内容，key/value 需要 string 类型
+        msg.set({
+          to: this.sendTo, // 接收消息对象（用户id）
+          customEvent,
+          customExts,
+          chatType: this.nowChatType,
+          ext: {}, // 消息扩展
+          success: function (id, serverMsgId) {
+            console.log('>>>>>>自定义消息发送成功', id, serverMsgId)
+          },
+          fail: function (e) {
+            console.log('>>>>>消息发送失败', e)
+          },
+        })
+        conn.send(msg.body)
+      },
+      //命令消息
+      sendCmdMsg() {
+        var id = conn.getUniqueId() //生成本地消息id
+        var msg = new WebIM.message('cmd', id) //创建命令消息
+        msg.set({
+          to: this.hxId, //接收消息对象
+          action: 'action', //用户自定义，cmd消息必填
+          chatType: this.nowChatType,
+          ext: {
+            extmsg: 'extends messages'
+          }, //用户自扩展的消息内容（群聊用法相同）
+          success: function (id, serverMsgId) {
+            console.log('>>>>>CMD消息发送成功', id, serverMsgId);
+          }, //消息发送成功回调
+          fail: function (e) {
+            console.log('Fail', e) //如禁言、拉黑后发送消息会失败
+          },
+        })
+        conn.send(msg.body)
+      },
+      //上传附件
+      updatFilebtn() {
+        var input = document.getElementById('updateFile'); // 选择图片的input
+        var file = WebIM.utils.getFileUrl(input); // 将图片转化为二进制文件
+        var options = {
+          apiUrl: '//a1.easemob.com',
+          appName: WebIM.conn.context.appName,
+          orgName: WebIM.conn.context.orgName,
+          accessToken: WebIM.conn.context.restTokenData,
+          appKey: WebIM.conn.appKey,
+          file: file,
+          onFileUploadComplete: function (data) {
+            //upload file success
+            console.log('>>>>>>附件上传成功', data);
+          },
+          onFileUploadError: function (e) {
+            //upload file error
+            console.log('>>>>>>附件上传失败', e);
+          }
+        };
+        WebIM.utils.uploadFile(options);
+      },
+      //发送已上传的附件
+      sendUpdatFile() {
+        var data = JSON.stringify({
+          "target_type": "users",
+          "target": ["pfh","hfp2"],
+          "from": "hfp",
+          "msg": {
+            "type": "img",
+            "filename": "testimg.jpg",
+            "secret": "JImHMIC5EeuopvfANpeFvugwnqejgQYz6nkHeW8Rz9tIsBXd",
+            "url": "https://a1.easemob.com/easemob-demo/chatdemoui/chatfiles/24896020-80b9-11eb-8d04-091af2f16c9e",
+            "size": {
+              "width": 480,
+              "height": 720
+            }
+          }
+        });
+
+        var config = {
+          method: 'post',
+          url: 'http://a1.easemob.com/easemob-demo/chatdemoui/messages',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer + 自己的token',
+            'Cookie': 'SERVERID=56681d1884f2ae64101416d8d04206c6|1615282024|1615281902'
+          },
+          data: data
+        };
+
+        axios(config)
+          .then(function (response) {
+            console.log(JSON.stringify(response.data));
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+
+      },
+      //发送附件消息
+      sendFileMsg() {
+        var id = conn.getUniqueId(); // 生成本地消息id
+        var msg = new WebIM.message(`${this.pickFileType}`, id); // 创建图片消息
+        var input = document.getElementById('updateFile'); // 选择图片的input
+        var file = WebIM.utils.getFileUrl(input); // 将图片转化为二进制文件
+        var allowType = {
+          'jpg': true,
+          'gif': true,
+          'png': true,
+          'bmp': true
+        };
+        // if (file.filetype.toLowerCase() in allowType) {
+        var option = {
+          file: file,
+          length: '3000', // 视频文件时，单位(ms)
+          ext: {
+            file_length: file.data.size // 文件大小
+          },
+          to: this.sendTo, // 接收消息对象
+          chatType: this.nowChatType, // 设置为单聊
+          onFileUploadError: function (e) { // 消息上传失败
+            console.log('onFileUploadError', e);
+          },
+          onFileUploadComplete: function (res) { // 消息上传成功
+            console.log('onFileUploadComplete', res);
+            let downLoadUrl = `${res.uri}/${res.entities[0].uuid}`;
+            console.log('>>>>服务器上传成功返回的地址', downLoadUrl);
+          },
+          success: function (id, mid) { // 消息发送成功
+            console.log('》》》》》附件发送成功', id, mid);
+            input.value = null
+
+          },
+          fail: function (e) {
+            console.log("Fail", e); //如禁言、拉黑后发送消息会失败
+          },
+          flashUpload: WebIM.flashUpload
+        };
+        msg.set(option);
+        conn.send(msg.body);
+        // }
+      },
+      //撤回消息
+      recallMsg() {
+        /**
+         * 发送撤回消息
+         * @param {Object} option - 
+         * @param {Object} option.mid -   回撤消息id
+         * @param {Object} option.to -   消息的接收方
+         * @param {Object} option.type -  chat(单聊) groupchat(群组) chatroom(聊天室)
+         */
+        let option = {
+          mid: this.messageId,
+          to: this.sendTo,
+          type: this.recallType
+        }
+        WebIM.conn.recallMessage(option)
+      },
+      //消息漫游
+      historyMsg() {
+        /**
+         * 获取对话历史消息
+         * @param {Object} options
+         * @param {String} options.queue   - 对方用户id（如果用户id内含有大写字母请改成小写字母）/群组id/聊天室id
+         * @param {String} options.count   - 每次拉取条数
+         * @param {Boolean} options.isGroup - 是否是群聊，默认为false
+         * @param {Function} options.success
+         * @param {Funciton} options.fail
+         */
+        var options = {
+          queue: this.sendTo,
+          isGroup: this.$refs.isCheck.checked, //选中是群组，否则是单聊
+          count: Number(this.msgNum),
+          success: function (res) {
+            console.log('>>>>>消息漫游拉取成功', res) //获取拉取成功的历史消息
+            res.forEach(items => {
+              console.log(items);
+            });
+          },
+          fail: function (err) {
+            console.log('>>>>拉取失败', err)
+          }
+        }
+        WebIM.conn.fetchHistoryMessages(options)
+      },
+      initHistioryMsg() {
+        WebIM.conn.mr_cache = []
+        alert('初始化成功~')
+      },
+      //会话列表
+      conveList() {
+        WebIM.conn.getSessionList().then((res) => {
+          console.log(res.data)
+        })
+      },
+      //初始化readNum
+      initReadNum() {
+        var msg = new WebIM.message('channel', conn.getUniqueId());
+        if (!this.$refs.isCheck.checked) {
+          msg.set({
+            to: this.sendTo
+          });
+          conn.send(msg.body);
+          alert('初始化单聊会话成功！')
+        } else {
+          // 如果是群聊
+          msg.set({
+            to: this.sendTo,
+            chatType: 'groupChat'
+          });
+          alert('初始化群聊会话成功！')
+          conn.send(msg.body);
+        }
+      },
+      //发贴图
+      sendPicture(e) {
+        // 单聊贴图发送
+        console.log('>>>>>111',e);
+
+      },
+
+      //获取好友关系列表
+      getFriendList() {
+        conn.getRoster().then((res) => {
+          console.log('获取好友关系列表>>>', res.data) // res.data > ['user1', 'user2']
+        }).catch(err => {
+          console.log('err', err);
+        });
+      },
+      //添加好友
+      addContact() {
+        let message = '加个好友呗!';
+        conn.addContact('username', message)
+      },
+      //删除好友
+      removeContact() {
+        conn.deleteContact('username');
+      },
+
     },
+
   })
 </script>

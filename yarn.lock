@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-easemob-websdk@^3.4.2:
-  version "3.4.2"
-  resolved "https://registry.yarnpkg.com/easemob-websdk/-/easemob-websdk-3.4.2.tgz#425c0107daa650e01e87911cee50d1e3583bbadb"
-  integrity sha512-751+97U6HEUZTfYykmsgL2RJhTU0UacaS2PcPjNXaARXcbTB4hjTEQvkDVXmc4gFGMVruz/pfzs9H7+z78mAVw==
+easemob-websdk@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/easemob-websdk/-/easemob-websdk-3.5.0.tgz#07814faf3473eae70d4edfaf2d24b64815239bf1"
+  integrity sha512-92bVl7o7nu/peGOcZIp2PZVEzP8IAHLkez+caktyQbbCis8qEGozYoQ7iDUyXoza0OleDVKK3gYXFVcUQrVBmg==
