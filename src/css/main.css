@@ -45,7 +45,7 @@ body{
     height: 50px;
     line-height: 50px;
 }
-#hxId,#hxPwd,#toId,#msgId,#freindId{
+#hxId,#hxPwd,#toId,#msgId,#freindId,#groupId{
     border: none;
     outline: none;
     width: 200px;
@@ -90,10 +90,24 @@ body{
 .msgList_box_content>h3{
     text-align: center;
 }
-
+/* 用户属性部分 */
+.user_Info{
+    margin-top: 50px;
+    /* height: 200px; */
+    background: rgba(78, 111, 242, 0.281);
+    padding: 10px;
+}
 /* 好友部分 */
 
 .friends_box{
+    margin-top: 50px;
+    height: 300px;
+    background: rgba(78, 111, 242, 0.281);
+    padding: 10px;
+}
+
+/* 群组部分 */
+.groups_box{
     margin-top: 50px;
     height: 300px;
     background: rgba(78, 111, 242, 0.281);

@@ -38,10 +38,12 @@ function getUrl() {
     // restServer: '//a1-vip6.easemob.com', // rest Server地址
     restServer: getUrl().apiUrl, // rest Server地址
   
-    // appkey: "1110201022157933#ceshi", // App key
+
     // appkey: "easemob-demo#chatdemoui", // App key
-    appkey: "easemob-demo#easeim", // App key
-    // appkey: "1160210311040265#ws", // App key
+    // appkey: "easemob-demo#easeim", // App key
+    appkey: "1110201022157933#ceshi", // App key
+    // appkey: "1118210104040139#edoe", // App key
+
     
   
     https: true, // 是否使用https
