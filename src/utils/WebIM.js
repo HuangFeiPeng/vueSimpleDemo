@@ -18,7 +18,10 @@ conn = WebIM.conn = new WebIM.connection({
 //发送已读回执方法
 function readAck(msg) {
   // console.log(msg);
-  const { id,from} = msg;
+  const {
+    id,
+    from
+  } = msg;
   var msg = new WebIM.message('read', conn.getUniqueId());
   msg.set({
     id: id,
@@ -121,6 +124,9 @@ conn.listen({
   onCreateGroup: function (message) {}, //创建群组成功回执（需调用createGroupNew）
   onMutedMessage: function (message) {}, //如果用户在A群组被禁言，在A群发消息会走这个回调并且消息不会传递给群其它成员
   onChannelMessage: function (message) {
-    console.log('>>>>>>>onChannelMessage',message);
-  } //收到整个会话已读的回执，在对方发送channel ack时会在这个回调里收到消息
+    console.log('>>>>>>>onChannelMessage', message);
+  }, //收到整个会话已读的回执，在对方发送channel ack时会在这个回调里收到消息
+  onCustomMessage: function (message) {
+    console.log('>>>>>>>收到自定义消息', message);
+  }, //收到自定义消息
 });

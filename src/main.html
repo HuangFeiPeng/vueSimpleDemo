@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="./css/main.css" />
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="../node_modules/easemob-websdk/websdk3.5.2.js"></script>
   <script src="./utils/WebIMConfig.js"></script>
@@ -32,7 +32,7 @@
             <div class="input_list">
               <label for="hxId">
                 环信ID：
-                <input id="hxId" type="text" v-model="hxId" placeholder="输入环信ID..."
+                <input id="hxId" type="text" v-model.trim="hxId" placeholder="输入环信ID..."
                   onkeyup="this.value=this.value.replace(/[, ]/g,'')" />
               </label>
             </div>
@@ -61,15 +61,15 @@
             <form autocomplete="off">
               <label for="singleChat">
                 单聊模式：
-                <input type="radio" id="singleChat" name="chatType" @click="setChatType(0)" checked />
+                <input type="radio" id="singleChat" name="chatType" v-model="nowChatType" value="singleChat" checked />
               </label>
               <label for="groupChat">
                 群聊模式：
-                <input type="radio" id="groupChat" name="chatType" @click="setChatType(1)" />
+                <input type="radio" id="groupChat" name="chatType" v-model="nowChatType" value="groupChat" />
               </label>
               <label for="roomChat">
                 聊天室模式：
-                <input type="radio" id="roomChat" name="chatType" @click="setChatType(2)" />
+                <input type="radio" id="roomChat" name="chatType" v-model="nowChatType" value="chatRoom" />
               </label>
               <label for="toId">
                 目标ID：
@@ -90,16 +90,16 @@
               <div class="fileType">
                 <h6 style="color: red;">*发附件记得选类型</h6>
                 <label for="img">
-                  <input type="radio" name="fileMsg" id="img" @click="pickFileType = 'img'">图片
+                  <input type="radio" name="fileMsg" id="img" v-model="pickFileType" value="img">图片
                 </label>
                 <label for="video">
-                  <input type="radio" name="fileMsg" id="video" @click="pickFileType = 'video'">视频
+                  <input type="radio" name="fileMsg" id="video" v-model="pickFileType" value="video">视频
                 </label>
                 <label for="audio">
-                  <input type="radio" name="fileMsg" id="audio" @click="pickFileType = 'audio'">音频
+                  <input type="radio" name="fileMsg" id="audio" v-model="pickFileType" value="audio">音频
                 </label>
                 <label for="allFile">
-                  <input type="radio" name="fileMsg" id="allFile" @click="pickFileType = 'file'">全文件
+                  <input type="radio" name="fileMsg" id="allFile" v-model="pickFileType" value="file">全文件
                 </label>
 
               </div>
@@ -119,6 +119,7 @@
             </form>
             <button @click="sendTextMsg">文本消息</button>
             <button @click="sendPicture">贴图消息</button>
+            <button @click="sendUrlMsg">发送URL图片消息</button>
             <button @click="sendCustomMsg">自定义消息</button>
             <button @click="sendCmdMsg">CMD命令消息</button>
             <button @click="updatFilebtn">单纯上传附件</button>
@@ -152,8 +153,8 @@
         <br />
         phone：<input type="text" placeholder="phone" v-model="user_info.phone">
         <br />
-        man：<input type="radio" name="gender" @click="user_info.gender = man">
-        woman：<input type="radio" name="gender" @click="user_info.gender = woman">
+        man：<input type="radio" name="gender" v-model="user_info.gender" value="man">
+        woman：<input type="radio" name="gender" v-model="user_info.gender" value="woman">
         <br />
         个性签名：<input type="text" placeholder="sign" v-model="user_info.sign">
         <br />
@@ -185,10 +186,10 @@
         <input type="button" value="创建群组" @click="createGroup">
         <input type="button" value="邀请他人加入群组" @click="inviteFriendJoin">
       </div>
-      <video src="blob:http://admin.xuekuibang.com/5fff0f15-562d-4dae-a3f1-8caccdc7dc8c" controls></video>
     </main>
   </div>
 </body>
 
 </html>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="./js/main.js"></script>
