@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="./css/main.css" />
 
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script src="../node_modules/easemob-websdk/websdk3.5.2.js"></script>
+  <!-- <script src="../node_modules/easemob-websdk/websdk3.5.2.js"></script> -->
+  <script src="../src/sdk/websdk3.6.3(1).js"></script>
   <script src="./utils/WebIMConfig.js"></script>
   <script src="./utils/WebIM.js"></script>
 
@@ -56,6 +57,7 @@
             </div>
           </form>
           <button @click="loginToken">token登陆</button>
+          <button @click="newNick">修改推送昵称</button>
           <div class="sendMsg_box">
             <h5>聊天类型设定</h5>
             <form autocomplete="off">

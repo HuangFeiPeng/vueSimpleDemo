@@ -49,17 +49,33 @@ const vm = new Vue({
         user: this.hxId,
         pwd: this.hxPwd,
         appKey: WebIM.config.appkey,
+        success(res){
+          console.log(res)
+          const {access_token} = res;
+          window.localStorage.setItem('token',JSON.stringify(access_token));
+        }
       }
       conn.open(options)
     },
     //token登陆
     loginToken() {
+      const token = JSON.parse(window.localStorage.getItem('token')) 
+      console.log(token)
       var options = {
         user: this.hxId,
-        accessToken: 'YWMt72qnlnpzEeuXoaGTylGr0-mnEluU3UYkp9fpuMJGksnXMPTwSkkR66nbLZyivJqzAwMAAAF37TS71gBPGgAwgkPIy74MMNO9DBCOcgVT4maetbrntUbrrFgrsB8Wvw',
+        accessToken: token,
         appKey: WebIM.config.appkey
       };
       conn.open(options);
+    },
+    //修改推送昵称
+    newNick() {
+      conn.updateCurrentUserNick('newNick').then(res => {
+        console.log(res);
+      }).catch(e => {
+        console.log(e);
+      })
+
     },
     //注册
     registerUser() {
@@ -333,6 +349,7 @@ const vm = new Vue({
        * @param {Object} options
        * @param {String} options.queue   - 对方用户id（如果用户id内含有大写字母请改成小写字母）/群组id/聊天室id
        * @param {String} options.count   - 每次拉取条数
+       * @param {String} options.count   - 开始拉取的时间ID
        * @param {Boolean} options.isGroup - 是否是群聊，默认为false
        * @param {Function} options.success
        * @param {Funciton} options.fail
@@ -341,6 +358,7 @@ const vm = new Vue({
         queue: this.sendTo,
         isGroup: this.$refs.isCheck.checked, //选中是群组，否则是单聊
         count: Number(this.msgNum),
+        start: this.messageId,
         success: function (res) {
           console.log('>>>>>消息漫游拉取成功', res) //获取拉取成功的历史消息
           res.forEach(items => {
@@ -400,9 +418,10 @@ const vm = new Vue({
         gender: this.user_info.gender,
         birth: this.user_info.birth,
         sign: this.user_info.sign,
-        ext: {
-          nationality: 'China'
-        }
+        ext: JSON.stringify({
+          nationality: 'M78星云',
+        })
+
       }
       WebIM.conn.updateOwnUserInfo(options).then((res) => {
         console.log(res)
