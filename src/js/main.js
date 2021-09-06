@@ -159,8 +159,6 @@ const vm = new Vue({
       console.log(params)
       const { type, data } = params;
       const toId = this.sendTo;
-      console.log('toIdtoIdtoIdtoId', data)
-
       let id = conn.getUniqueId();                 // 生成本地消息id
       let msg = new WebIM.message(type, id);      // 创建文本消息
       let option = {
