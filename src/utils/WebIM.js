@@ -40,7 +40,6 @@ conn.listen({
     }
     '在线...' //登陆成功修改在线状态
     // vm.user_state
-    alert('登陆环信成功！！！')
   }, //连接成功回调 
   onClosed: function (message) {
     alert('>>>>>退出环信');
@@ -104,8 +103,12 @@ conn.listen({
   }, //处理“广播”或“发布-订阅”消息，如联系人订阅请求、处理群组、聊天室被踢解散等消息
   onRoster: function (message) {}, //处理好友申请
   onInviteMessage: function (message) {}, //处理群组邀请
-  onOnline: function () {}, //本机网络连接成功
-  onOffline: function () {}, //本机网络掉线
+  onOnline: function () {
+    console.log('>>>>网络连接')
+  }, //本机网络连接成功
+  onOffline: function () {
+    console.log('>>>网络断开')
+  }, //本机网络掉线
   onError: function (err) {
     console.log('>>>>onError', err);
   }, //失败回调
@@ -130,3 +133,4 @@ conn.listen({
     console.log('>>>>>>>收到自定义消息', message);
   }, //收到自定义消息
 });
+

@@ -8,8 +8,8 @@ const vm = new Vue({
         text: '离线中...',
         font_color: 'color:red;'
       },
-      hxId: '', //环信ID
-      hxPwd: '', //环信密码
+      hxId: 'hfp2', //环信ID
+      hxPwd: '1', //环信密码
       pickFileType: 'video', //选中的附件类型
       msgNum: "10", //漫游条数
       isSingle: true,
@@ -39,7 +39,9 @@ const vm = new Vue({
     }
   },
   created() {
-
+    // console.log(this)
+    this.fetchUserInfoById()
+    setTimeout(() => { this.login() }, 500)
   },
   methods: {
     //登陆
@@ -49,17 +51,17 @@ const vm = new Vue({
         user: this.hxId,
         pwd: this.hxPwd,
         appKey: WebIM.config.appkey,
-        success(res){
+        success(res) {
           console.log(res)
-          const {access_token} = res;
-          window.localStorage.setItem('token',JSON.stringify(access_token));
+          const { access_token } = res;
+          window.localStorage.setItem('token', JSON.stringify(access_token));
         }
       }
       conn.open(options)
     },
     //token登陆
     loginToken() {
-      const token = JSON.parse(window.localStorage.getItem('token')) 
+      const token = JSON.parse(window.localStorage.getItem('token'))
       console.log(token)
       var options = {
         user: this.hxId,
@@ -126,6 +128,101 @@ const vm = new Vue({
     isCheck(e) {
       console.log(this.$refs.isCheck.checked);
     },
+    //图文混发测试
+    sendImgAndText() {
+      //取到文本框下的所有子节点
+      // const childrenNodeList = document.querySelectorAll("#msgArea")[0].childNodes;
+      const childrenNodeList = document.querySelectorAll("#msgArea")[0].childNodes;
+      console.log(childrenNodeList)
+      for (let k of childrenNodeList) {
+        if (childrenNodeList.length === 0) return;
+        if (k.nodeName === "IMG") {
+          const blob = this.dataURLtoBlob(k.currentSrc) //这一步是为了拿到剪切过来的图片将base64转为二进制blob格式。
+          console.log(blob)
+          const url = window.URL.createObjectURL(blob); //将二进制转为临时可使用的url 这个转换完的是可以直接放入src显示的url
+          console.log(url)
+          const FileData = new window.File([blob], '填入文件名', { type: 'image/png' }) //由于要上传服务端所以要转为file类型文件 第二个以及第三个形参可选。
+          console.log(FileData)
+          let file = {
+            data: FileData,
+            filename: "文件名",
+            filetype: "png",
+            url: url
+          }
+          this.actionSendMsg({ type: 'img', data: file })
+        }
+        if (k.nodeName === "#text") this.actionSendMsg({ type: 'txt', data: k.nodeValue })
+      }
+      
+    },
+    actionSendMsg(params) {
+      console.log(params)
+      const { type, data } = params;
+      const toId = this.sendTo;
+      console.log('toIdtoIdtoIdtoId', data)
+
+      let id = conn.getUniqueId();                 // 生成本地消息id
+      let msg = new WebIM.message(type, id);      // 创建文本消息
+      let option = {
+        //文本类型消息体构建
+        "txt": {
+          msg: data,                  // 消息内容
+          ext: {
+          },
+          success: function (id, serverMsgId) {
+            console.log('%c 发送成功文本serverMsgId', "color: green", serverMsgId);
+          },
+          fail: function (e) {
+            console.log("Send private text error", e);
+          },
+          to: toId,
+        },
+        //图片类型消息体构建
+        "img": {
+          file: data,
+          to: toId,                       // 接收消息对象
+          onFileUploadError: function () {      // 消息上传失败
+            console.log('onFileUploadError');
+          },
+          onFileUploadProgress: function (e) { // 上传进度的回调
+            console.log(e)
+          },
+          onFileUploadComplete: function (res) {   // 消息上传成功
+            console.log('onFileUploadComplete', res);
+          },
+          success: function (id,serverMsgId) {                // 消息发送成功
+            console.log('%c 发送成功图片serverMsgId', "color: blue", serverMsgId);
+          },
+          fail: function (e) {
+            console.log("Fail");              //如禁言、拉黑后发送消息会失败
+          },
+        }
+      }
+      msg.set({
+        chatType: 'singleChat',
+
+      });
+      msg.set(option[type]);
+      conn.send(msg.body);
+
+
+    },
+    /* base64转blob */
+    dataURLtoBlob(dataurl) {
+      var arr = dataurl.split(',');
+      //注意base64的最后面中括号和引号是不转译的   
+      var _arr = arr[1].substring(0, arr[1].length - 2);
+      var mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(_arr),
+        n = bstr.length,
+        u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], {
+        type: mime
+      });
+    },
     //文本消息
     sendTextMsg() {
       let id = conn.getUniqueId() // 生成本地消息id
@@ -162,15 +259,22 @@ const vm = new Vue({
       var id = conn.getUniqueId() // 生成本地消息id
       var msg = new WebIM.message('custom', id) // 创建自定义消息
       var customEvent = 'EvenName' // 创建自定义事件
-      var customExts = {
-        ang: 'something',
+      let customExts = {
+        id: "167487656230913",
+        des: "吃7发还减肥123"
+
       } // 消息内容，key/value 需要 string 类型
       msg.set({
         to: this.sendTo, // 接收消息对象（用户id）
         customEvent,
         customExts,
         chatType: this.nowChatType,
-        ext: {}, // 消息扩展
+        ext: {
+          id: '167487656230913',
+          des: "吃7发还减肥123",
+          type: 10000,
+          source: 'pc'
+        }, // 消息扩展
         success: function (id, serverMsgId) {
           console.log('>>>>>>自定义消息发送成功', id, serverMsgId)
         },
@@ -179,6 +283,20 @@ const vm = new Vue({
         },
       })
       conn.send(msg.body)
+      // msg.set({
+      //   to: this.sendTo, // 接收消息对象（用户id）
+      //   customEvent,
+      //   customExts,
+      //   chatType: this.nowChatType,
+      //   ext: {}, // 消息扩展
+      //   success: function (id, serverMsgId) {
+      //     console.log('>>>>>>自定义消息发送成功', id, serverMsgId)
+      //   },
+      //   fail: function (e) {
+      //     console.log('>>>>>消息发送失败', e)
+      //   },
+      // })
+      // conn.send(msg.body)
     },
     //发送URL图片消息
     sendUrlMsg() {
@@ -294,6 +412,7 @@ const vm = new Vue({
         'png': true,
         'bmp': true
       };
+      console.log('>>>>>>>>>>附件的file', file)
       // if (file.filetype.toLowerCase() in allowType) {
       var option = {
         file: file,
@@ -305,6 +424,9 @@ const vm = new Vue({
         chatType: this.nowChatType, // 设置为单聊
         onFileUploadError: function (e) { // 消息上传失败
           console.log('onFileUploadError', e);
+        },
+        onFileUploadProgress: function (e) { // 上传进度的回调
+          console.log('>>>>>>>文件上传进度', e)
         },
         onFileUploadComplete: function (res) { // 消息上传成功
           console.log('onFileUploadComplete', res);
@@ -450,12 +572,14 @@ const vm = new Vue({
     },
     //添加好友
     addContact() {
+      const friendId = this.freiendConfig.freiendId
       let message = '加个好友呗!';
-      conn.addContact('username', message)
+      conn.addContact(friendId, message)
     },
     //删除好友
     removeContact() {
-      conn.deleteContact('username');
+      const friendId = this.freiendConfig.freiendId
+      conn.deleteContact(friendId);
     },
 
     /* 群组功能相关 */
@@ -464,6 +588,11 @@ const vm = new Vue({
       let id = this.groupConfig.id;
       this.groupConfig.addGroupLsit.push(id)
       this.groupConfig.id = ""
+    },
+    //获取当前用户加入的群组
+    getNowUserJoinGroup: async () => {
+      let groups = await conn.getGroup()
+      console.log('>>>>>>获取成功', groups)
     },
     //创建群组
     createGroup() {
