@@ -3,7 +3,6 @@ const vm = new Vue({
   data() {
     return {
       isLogin: true, //true登陆 false注册
-
       user_state: {
         text: '离线中...',
         font_color: 'color:red;'
@@ -40,8 +39,8 @@ const vm = new Vue({
   },
   created() {
     // console.log(this)
-    this.fetchUserInfoById()
-    setTimeout(() => { this.login() }, 500)
+    // this.fetchUserInfoById()
+    // setTimeout(() => { this.login() }, 500)
   },
   methods: {
     //登陆
@@ -53,7 +52,9 @@ const vm = new Vue({
         appKey: WebIM.config.appkey,
         success(res) {
           console.log(res)
-          const { access_token } = res;
+          const {
+            access_token
+          } = res;
           window.localStorage.setItem('token', JSON.stringify(access_token));
         }
       }
@@ -64,8 +65,8 @@ const vm = new Vue({
       const token = JSON.parse(window.localStorage.getItem('token'))
       console.log(token)
       var options = {
-        user: this.hxId,
-        accessToken: token,
+        user: 'mtime1826d03',
+        accessToken: 'YWMtVi29sFJpEeyAHkcpRkxUCBPt7bxwkU4qqTQbapnIWtzSKjJwUkMR7JeZ5aZtkx5qAwMAAAF9dIMj9AWP1ABEKZeKIlEgpCg7ptkXj1-oye0D8ODTjkZKBnka3pghxg',
         appKey: WebIM.config.appkey
       };
       conn.open(options);
@@ -141,7 +142,9 @@ const vm = new Vue({
           console.log(blob)
           const url = window.URL.createObjectURL(blob); //将二进制转为临时可使用的url 这个转换完的是可以直接放入src显示的url
           console.log(url)
-          const FileData = new window.File([blob], '填入文件名', { type: 'image/png' }) //由于要上传服务端所以要转为file类型文件 第二个以及第三个形参可选。
+          const FileData = new window.File([blob], '填入文件名', {
+            type: 'image/png'
+          }) //由于要上传服务端所以要转为file类型文件 第二个以及第三个形参可选。
           console.log(FileData)
           let file = {
             data: FileData,
@@ -149,24 +152,32 @@ const vm = new Vue({
             filetype: "png",
             url: url
           }
-          this.actionSendMsg({ type: 'img', data: file })
+          this.actionSendMsg({
+            type: 'img',
+            data: file
+          })
         }
-        if (k.nodeName === "#text") this.actionSendMsg({ type: 'txt', data: k.nodeValue })
+        if (k.nodeName === "#text") this.actionSendMsg({
+          type: 'txt',
+          data: k.nodeValue
+        })
       }
-      
+
     },
     actionSendMsg(params) {
       console.log(params)
-      const { type, data } = params;
+      const {
+        type,
+        data
+      } = params;
       const toId = this.sendTo;
-      let id = conn.getUniqueId();                 // 生成本地消息id
-      let msg = new WebIM.message(type, id);      // 创建文本消息
+      let id = conn.getUniqueId(); // 生成本地消息id
+      let msg = new WebIM.message(type, id); // 创建文本消息
       let option = {
         //文本类型消息体构建
         "txt": {
-          msg: data,                  // 消息内容
-          ext: {
-          },
+          msg: data, // 消息内容
+          ext: {},
           success: function (id, serverMsgId) {
             console.log('%c 发送成功文本serverMsgId', "color: green", serverMsgId);
           },
@@ -178,21 +189,21 @@ const vm = new Vue({
         //图片类型消息体构建
         "img": {
           file: data,
-          to: toId,                       // 接收消息对象
-          onFileUploadError: function () {      // 消息上传失败
+          to: toId, // 接收消息对象
+          onFileUploadError: function () { // 消息上传失败
             console.log('onFileUploadError');
           },
           onFileUploadProgress: function (e) { // 上传进度的回调
             console.log(e)
           },
-          onFileUploadComplete: function (res) {   // 消息上传成功
+          onFileUploadComplete: function (res) { // 消息上传成功
             console.log('onFileUploadComplete', res);
           },
-          success: function (id,serverMsgId) {                // 消息发送成功
+          success: function (id, serverMsgId) { // 消息发送成功
             console.log('%c 发送成功图片serverMsgId', "color: blue", serverMsgId);
           },
           fail: function (e) {
-            console.log("Fail");              //如禁言、拉黑后发送消息会失败
+            console.log("Fail"); //如禁言、拉黑后发送消息会失败
           },
         }
       }
@@ -230,11 +241,12 @@ const vm = new Vue({
         to: String(this.sendTo), // 接收消息对象（用户id）
         chatType: this.nowChatType, // 设置聊天类型
         ext: {
-          key: '头像URL',
-          key2: {
-            key3: '昵称',
-          },
-        }, //扩展消息
+          name: "汉科汽车修理公司",
+          scene: "v2c",
+          type: "txt",
+          userType: "vendor"
+        },
+
         success: function (id, serverMsgId) {
           console.log('>>>>>>>>发送成功', id, serverMsgId)
         },
@@ -489,6 +501,7 @@ const vm = new Vue({
           console.log('>>>>拉取失败', err)
         }
       }
+      debugger
       WebIM.conn.fetchHistoryMessages(options)
     },
     initHistioryMsg() {
@@ -622,6 +635,12 @@ const vm = new Vue({
       };
       conn.inviteToGroup(option).then((res) => {
         console.log(res)
+      })
+    },
+    //获取用户加入群组列表  
+    getJoinedGroup() {
+      conn.getGroup().then((res) => {
+        console.log('>>>>>获取成功', res)
       })
     }
   },

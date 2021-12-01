@@ -9,7 +9,7 @@
 
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <!-- <script src="../node_modules/easemob-websdk/websdk3.5.2.js"></script> -->
-  <script src="../src/sdk/websdk3.6.3(1).js"></script>
+  <script src="../src/sdk/websdk3.6.3.js"></script>
   <script src="./utils/WebIMConfig.js"></script>
   <script src="./utils/WebIM.js"></script>
 
@@ -189,11 +189,17 @@
         <input type="number" id="groupId" placeholder="请输入群组ID" v-model="groupConfig.groupId">
         <input type="button" value="创建群组" @click="createGroup">
         <input type="button" value="邀请他人加入群组" @click="inviteFriendJoin">
+        <input type="button" value="获取用户加入的群组列表" @click="getJoinedGroup">
       </div>
     </main>
+    <button onclick="notifyMe()">点击通知</button>
+    <video src="http://a1-v2.easemob.com/1122201223046238/smartyouke-callcenter-im/chatfiles/72a6e260-3ca6-11ec-9f9d-1d547fc737ca?em-redirect=true&share-secret=cqcJcDymEeyYS-nVunl-tD-9eIbCwxjleJDqs4f9hHZVM6CP?em-redirect=true&origin-file=true" controls></video>
   </div>
 </body>
 
 </html>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="./js/main.js"></script>
+<script>
+  
+</script>
