@@ -191,9 +191,21 @@
         <input type="button" value="邀请他人加入群组" @click="inviteFriendJoin">
         <input type="button" value="获取用户加入的群组列表" @click="getJoinedGroup">
       </div>
+
+      <!-- 聊天室部分 -->
+      <div class="chatroom_box">
+        <h3>聊天室部分</h3>
+        <input v-model="chatRoomConfig.chatRoomId" id="chatRoomId" type="text" placeholder="请输入聊天室id">
+        <p v-for="(item, index) in chatRoomConfig.chatRoomList" :key="index">{{ item.id }}</p>
+        <input type="button" value="获取聊天室列表" @click="getChatRooms">
+        <input type="button" value="加入聊天室" @click="joinChatRoom">
+      </div>
     </main>
     <button onclick="notifyMe()">点击通知</button>
-    <video src="http://a1-v2.easemob.com/1122201223046238/smartyouke-callcenter-im/chatfiles/72a6e260-3ca6-11ec-9f9d-1d547fc737ca?em-redirect=true&share-secret=cqcJcDymEeyYS-nVunl-tD-9eIbCwxjleJDqs4f9hHZVM6CP?em-redirect=true&origin-file=true" controls></video>
+    <img src="http://a1.easemob.com/easemob-demo/easeim/chatfiles/f98ae470-5349-11ec-9ba2-2161577c2395" alt="">
+    <video
+      src="http://a1-v2.easemob.com/1122201223046238/smartyouke-callcenter-im/chatfiles/72a6e260-3ca6-11ec-9f9d-1d547fc737ca?em-redirect=true&share-secret=cqcJcDymEeyYS-nVunl-tD-9eIbCwxjleJDqs4f9hHZVM6CP?em-redirect=true&origin-file=true"
+      controls></video>
   </div>
 </body>
 
@@ -201,5 +213,5 @@
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="./js/main.js"></script>
 <script>
-  
+
 </script>
