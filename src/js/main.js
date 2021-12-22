@@ -171,6 +171,7 @@ const vm = new Vue({
       }
     },
     actionSendMsg(params) {
+      debugger;
       console.log(params);
       const { type, data } = params;
       const toId = this.sendTo;
@@ -226,7 +227,14 @@ const vm = new Vue({
         chatType: 'singleChat',
       });
       msg.set(option[type]);
-      conn.send(msg.body);
+      conn
+        .send(msg.body)
+        .then((res) => {
+          console.log('success', res);
+        })
+        .catch((e) => {
+          console.log('>>>>失败', e);
+        });
     },
     /* base64转blob */
     dataURLtoBlob(dataurl) {
@@ -246,6 +254,7 @@ const vm = new Vue({
     },
     //文本消息
     sendTextMsg() {
+      debugger;
       let id = conn.getUniqueId(); // 生成本地消息id
       let msg = new WebIM.message('txt', id); // 创建文本消息
       msg.set({
@@ -274,7 +283,12 @@ const vm = new Vue({
           console.log('Send private text error', e, msg.body);
         },
       });
-      conn.send(msg.body);
+      conn
+        .send(msg.body)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((e) => console.log(e));
     },
     //自定义消息
     sendCustomMsg() {
@@ -516,7 +530,6 @@ const vm = new Vue({
           console.log('>>>>拉取失败', err);
         },
       };
-      debugger;
       WebIM.conn.fetchHistoryMessages(options);
     },
     initHistioryMsg() {
