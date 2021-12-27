@@ -38,11 +38,11 @@ let config = {
   // restServer: '//a31.easemob.com', // rest Server地址
   // restServer: getUrl().apiUrl, // rest Server地址
 
-  // appkey: "easemob-demo#chatdemoui", // App key
-  appkey: "easemob-demo#easeim", // App key
+  // appkey: 'easemob-demo#chatdemoui', // App key
+  appkey: 'easemob-demo#easeim', // App key
+  // appkey: '1122201223046238#smartyouke-callcenter-im', // App key
   // appkey: "easemob-demo#easeim", // App key
-  // appkey: "1110201022157933#ceshi", // App key
-
+  // appkey: '1110201022157933#ceshi', // App key
 
   https: true, // 是否使用https
 

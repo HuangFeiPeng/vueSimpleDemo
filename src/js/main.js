@@ -694,9 +694,14 @@ const vm = new Vue({
         roomId: roomId, // 聊天室id
         message: '我就想加', // 原因（可选参数）
       };
-      conn.joinChatRoom(options).then((res) => {
-        console.log('>>>>>>加入聊天室成功', res);
-      });
+      conn
+        .joinChatRoom(options)
+        .then((res) => {
+          console.log('>>>>>>加入聊天室成功', res);
+        })
+        .catch((e) => {
+          console.log('>>>>加入失败', e);
+        });
     },
   },
   components: {
